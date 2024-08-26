@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  db-profiles:
+    image: postgres
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin123
+    env_file:
+      - src/.env
+    ports:
+      - "5432:5432"
+volumes:
+  db-profiles:
