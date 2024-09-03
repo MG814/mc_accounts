@@ -1,1 +1,1 @@
-[![codecov](https://codecov.io/github/MG814/mc_api_gateway/graph/badge.svg?token=1087Q2Q1SN)](https://codecov.io/github/MG814/mc_api_gateway)
+[![codecov](https://codecov.io/gh/MG814/mc_profiles/graph/badge.svg?token=C4OJFGSWMX)](https://codecov.io/gh/MG814/mc_profiles)
