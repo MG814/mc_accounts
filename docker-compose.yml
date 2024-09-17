@@ -1,18 +1,18 @@
 version: "3.9"
 services:
-  db-profiles:
+  db-accounts:
     image: postgres
     environment:
-      - POSTGRES_DB=${DB_NAME}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin123
     env_file:
       - /src/.env
     ports:
       - "5433:5432"
     networks:
       - mc_network
-  web-profiles:
+  web-accounts:
     build: .
     command: python src/manage.py runserver 0.0.0.0:8100
     volumes:
@@ -22,7 +22,7 @@ services:
     networks:
       - mc_network
     depends_on:
-      - db-profiles
+      - db-accounts
 networks:
   mc_network:
     external: true
