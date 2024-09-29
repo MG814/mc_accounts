@@ -1,5 +1,23 @@
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 from .models import User
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        token['role'] = user.role
+
+        return token
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'role']
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -7,7 +25,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'password', 'password_confirmation', 'role']
+        fields = ['username', 'email', 'first_name', 'last_name', 'password', 'password_confirmation', 'phone', 'role']
 
     # Walidacja haseł
     def validate(self, data):
@@ -18,12 +36,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # Usuwamy pole 'password_confirmation' ponieważ nie jest potrzebne do tworzenia użytkownika
         validated_data.pop('password_confirmation')
-        user = User.objects.create_user(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
-            password=validated_data['password'],
-            role=validated_data['role']
-        )
+
+        user = User.objects.create_user(**validated_data)
         return user

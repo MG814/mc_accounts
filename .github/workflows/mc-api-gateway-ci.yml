@@ -1,4 +1,4 @@
-name: API Gateway CI
+name: Accounts CI
 
 on:
   push:
