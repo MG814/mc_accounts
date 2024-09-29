@@ -50,6 +50,7 @@ INSTALLED_APPS = [
 
 INSTALLED_EXTENSION = [
     'accounts',
+    'address',
 ]
 
 INSTALLED_APPS += INSTALLED_EXTENSION
