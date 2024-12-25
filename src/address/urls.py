@@ -4,10 +4,6 @@ from rest_framework import routers
 from .views import UserAddressView
 
 router = routers.SimpleRouter()
-router.register('users', UserAddressView, basename='user-addresss')
+router.register('', UserAddressView, basename='address')
 
-
-urlpatterns = [
-]
-
-urlpatterns += router.urls
+urlpatterns = router.urls
