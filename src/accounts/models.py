@@ -8,4 +8,4 @@ class User(AbstractUser):
         max_length=10,
         choices=[('Patient', 'Patient'), ('Doctor', 'Doctor')],
     )
-
+    specialization = models.CharField(max_length=200, blank=True, null=True)
