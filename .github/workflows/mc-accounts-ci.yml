@@ -39,6 +39,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install poetry
         poetry install
+        poetry add --dev coverage
     - name: Run Tests
       run: |
         cd src
