@@ -8,7 +8,7 @@ package-mode = false
 
 [tool.poetry.dependencies]
 bandit = "1.7.9"
-coverage = "7.6.1"
+coverage = "^7.6.12"
 django = "5.1"
 django-environ = "0.11.2"
 django-extensions = "3.2.3"
