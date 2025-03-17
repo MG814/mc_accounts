@@ -39,13 +39,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install poetry
         poetry install
-        poetry add --dev coverage
     - name: Run Tests
       run: |
         cd src
-        coverage run manage.py test
-        coverage report
-        coverage xml
+        poetry run coverage run manage.py test
+        poetry run coverage report
+        poetry run coverage xml
       env:
         DB_NAME: ${{ vars.DB_NAME }}
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
@@ -58,11 +57,11 @@ jobs:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     - name: Run Bandit
       run: | 
-        bandit -r src
+        poetry run bandit -r src
     - name: Run Ruff
       run: |
-        ruff src
+        poetry run ruff src
     - name: Run Safety
       run: |
-        safety check
+        poetry run safety check
       continue-on-error: true
