@@ -1,8 +1,12 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
 
 
-class User(AbstractUser):
+class User(models.Model):
+    auth0_id = models.CharField(max_length=50)
+    username = models.CharField(max_length=255)
+    email = models.EmailField(unique=True)
+    name = models.CharField(max_length=255)
+    surname = models.CharField(max_length=255)
     phone = models.CharField(max_length=15)
     role = models.CharField(
         max_length=10,
