@@ -83,7 +83,7 @@ class UserDetailView(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
     permission_classes = [AllowAny]
 
 
-class UpdateAuth0UserView(APIView):
+class UpdateUserView(APIView):
     permission_classes = [AllowAny]
 
     def get_management_token(self):
@@ -99,38 +99,45 @@ class UpdateAuth0UserView(APIView):
 
         return response_data.get("access_token")
 
-    def patch(self, request, auth0_id):
-        auth0_token = self.get_management_token()
-        if not auth0_token:
-            return Response({"error": "Błąd autoryzacji z Auth0"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        auth0_url = f"https://{settings.AUTH0_DOMAIN}/api/v2/users/{auth0_id}"
-
-        headers = {"Authorization": f"Bearer {auth0_token}", "Content-Type": "application/json"}
+    def add_data_from_request(self, request_data):
         fields = ['username', 'email']
         auth0_data = {}
         auth0_user_metadata = {}
         local_data_base_data = {}
 
-        for key, value in request.data.items():
+        for key, value in request_data.items():
             if key in fields:
                 auth0_data[key] = value
             else:
                 auth0_user_metadata[key] = value
             local_data_base_data[key] = value
         auth0_data["user_metadata"] = auth0_user_metadata
+        return local_data_base_data, auth0_data
+
+    def set_new_value_to_user(self, local_data_base_data, auth0_id):
+        user = User.objects.get(auth0_id=auth0_id)
+        for field, value in local_data_base_data.items():
+            setattr(user, field, value)
+        user.save()
+
+    def patch(self, request, user_id):
+        auth0_token = self.get_management_token()
+        if not auth0_token:
+            return Response({"error": "Błąd autoryzacji z Auth0"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        auth0_id = User.objects.get(id=user_id).auth0_id
+
+        auth0_url = f"https://{settings.AUTH0_DOMAIN}/api/v2/users/{auth0_id}"
+
+        headers = {"Authorization": f"Bearer {auth0_token}", "Content-Type": "application/json"}
+        local_data_base_data, auth0_data = self.add_data_from_request(request.data)
 
         try:
             auth0_response = requests.patch(auth0_url, json=auth0_data, headers=headers)
             auth0_response.raise_for_status()
+            self.set_new_value_to_user(local_data_base_data, auth0_id)
 
-            user = User.objects.get(auth0_id=auth0_id)
-
-            for field, value in local_data_base_data.items():
-                setattr(user, field, value)
-
-            user.save()
-            return Response({"message": "Użytkownik zaktualizowany w Auth0"}, status=status.HTTP_200_OK)
+            return Response({"message": "Użytkownik zaktualizowany"}, status=status.HTTP_200_OK)
         except requests.exceptions.HTTPError as http_err:
             return Response({
                 "error": "Błąd aktualizacji użytkownika w Auth0",
