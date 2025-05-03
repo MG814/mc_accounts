@@ -6,6 +6,7 @@ from unittest.mock import patch, MagicMock
 from accounts.models import User
 
 from rest_framework.test import APITestCase
+from accounts.views import UpdateUserView
 
 
 class TestUpdateUser(APITestCase):
@@ -13,6 +14,7 @@ class TestUpdateUser(APITestCase):
         self.user = User.objects.create(
             auth0_id='auth0|123456',
             username='testuser',
+            name='testusername',
             email='test@example.com'
         )
         self.update_user_url = reverse('update-auth0-user', kwargs={'auth0_id': self.user.auth0_id})
@@ -22,8 +24,7 @@ class TestUpdateUser(APITestCase):
     def test_update_user_success(self, mock_token_request, mock_auth0_patch):
         update_data = {
             'username': 'newusername',
-            'email': 'newemail@example.com',
-            'custom_field': 'custom_value'
+            'email': 'newemail@example.com'
         }
         # Symulacja pobrania tokena
         mock_token_request.return_value.json.return_value = {
@@ -31,13 +32,13 @@ class TestUpdateUser(APITestCase):
         }
 
         # Symulacja sukcesu aktualizacji w Auth0
-        mock_auth0_patch.return_value.raise_for_status.return_value = None
+        mock_auth0_patch.return_value.status_code = status.HTTP_200_OK
 
         response = self.client.patch(self.update_user_url, update_data, format='json')
 
         # Weryfikacja odpowiedzi
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data['message'], 'Użytkownik zaktualizowany w Auth0')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['message'], 'Użytkownik zaktualizowany')
 
         # Weryfikacja aktualizacji użytkownika w bazie
         self.user.refresh_from_db()
@@ -82,3 +83,26 @@ class TestUpdateUser(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
         self.assertEqual(response.data['error'], 'Błąd autoryzacji z Auth0')
+
+    def test_add_data_from_request_function(self):
+        update_data = {
+            'username': 'newusername',
+            'name': 'newname'
+        }
+        view = UpdateUserView()
+        local_db_data, auth0_data = view.add_data_from_request(update_data)
+
+        self.assertEqual(local_db_data, update_data)
+        self.assertEqual(auth0_data['username'], update_data['username'])
+        self.assertEqual(auth0_data['user_metadata']['name'], update_data['name'])
+
+    def test_set_new_velue_to_user(self):
+        local_db_data = {
+            'username': 'newusername',
+            'name': 'newname'
+        }
+        view = UpdateUserView()
+        view.set_new_value_to_user(local_db_data, self.user.auth0_id)
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.username, 'newusername')
+        self.assertEqual(self.user.name, 'newname')
