@@ -39,6 +39,8 @@ jobs:
         python -m pip install --upgrade pip
         pip install poetry
         poetry install
+      env:
+        POETRY_VIRTUALENVS_CREATE: false
     - name: Run Tests
       run: |
         cd src
@@ -57,11 +59,11 @@ jobs:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     - name: Run Bandit
       run: | 
-        poetry run bandit -r src
+        bandit -r src
     - name: Run Ruff
       run: |
-        poetry run ruff src
+        ruff src
     - name: Run Safety
       run: |
-        poetry run safety check
+        safety check
       continue-on-error: true
