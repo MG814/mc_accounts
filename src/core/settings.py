@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
+    'drf_spectacular',
 ]
 
 INSTALLED_EXTENSION = [
@@ -55,6 +56,10 @@ INSTALLED_EXTENSION = [
 ]
 
 INSTALLED_APPS += INSTALLED_EXTENSION
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -147,24 +152,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# AUTH_USER_MODEL = 'accounts.User'
-
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
-}
 
 AUTH0_DOMAIN = "dev-s3wwpz0aeo4ffn13.us.auth0.com"
 AUTH0_CLIENT_ID = "8vQCg32VuBvhl83V6RkL8Sfwtbsp8LiI"
 AUTH0_CLIENT_SECRET = "bq5AyY60JJ3OGadYSs5cpFdnrLU6qa4Ljxa_uGm4_AZSMeEGfDhFudRO61FIvQD5"
-AUTH0_CALLBACK_URL = "http://127.0.0.1:8000/api/v4/callback/"
+AUTH0_CALLBACK_URL = "http://127.0.0.1:8000/api/callback/"
 AUTH0_AUDIENCE = "https://dev-s3wwpz0aeo4ffn13.us.auth0.com/api/v2/"
 LOGOUT_REDIRECT_URL = "http://127.0.0.1:8100/admin/"
-
-
-
 
