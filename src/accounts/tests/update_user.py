@@ -26,21 +26,18 @@ class TestUpdateUser(APITestCase):
             'username': 'newusername',
             'email': 'newemail@example.com'
         }
-        # Symulacja pobrania tokena
+
         mock_token_request.return_value.json.return_value = {
             'access_token': 'fake_token'
         }
 
-        # Symulacja sukcesu aktualizacji w Auth0
         mock_auth0_patch.return_value.status_code = status.HTTP_200_OK
 
         response = self.client.patch(self.update_user_url, update_data, format='json')
 
-        # Weryfikacja odpowiedzi
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['message'], 'Użytkownik zaktualizowany')
 
-        # Weryfikacja aktualizacji użytkownika w bazie
         self.user.refresh_from_db()
         self.assertEqual(self.user.username, 'newusername')
         self.assertEqual(self.user.email, 'newemail@example.com')
@@ -48,7 +45,6 @@ class TestUpdateUser(APITestCase):
     @patch("requests.patch")
     @patch("requests.post")
     def test_update_user_auth0_error(self, mock_token_request, mock_auth0_patch):
-        # Dane do aktualizacji
         update_data = {
             'username': 'newusername',
             'email': 'newemail@example.com'
@@ -58,7 +54,6 @@ class TestUpdateUser(APITestCase):
             'access_token': 'fake_token'
         }
 
-        # Symulacja błędu Auth0
         mock_error_response = MagicMock()
         mock_error_response.status_code = status.HTTP_400_BAD_REQUEST
         mock_error_response.json.return_value = {
