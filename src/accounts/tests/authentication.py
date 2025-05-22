@@ -11,14 +11,10 @@ from core import settings
 
 class TestAccountsViews(APITestCase):
     def setUp(self) -> None:
-        # Aktualizacja URL-i żeby pasowały do nowych widoków
         self.register_url = reverse("register-list")
         self.login_url = reverse("auth0-login")
         self.logout_url = reverse("logout")
 
-        # Ten słownik danych nie będzie już używany bezpośrednio w testach POST,
-        # ponieważ teraz tylko przekierowujemy na Auth0, ale może się przydać
-        # do innych testów
         self.user_data = {
             "user_id": "auth0|123456789",
             "username": "testuser",
@@ -62,8 +58,6 @@ class TestAccountsViews(APITestCase):
     def test_create_user_success(self):
         self.assertEqual(User.objects.count(), 0)
 
-        # Symulujemy zapytanie z danymi użytkownika, które normalnie
-        # pochodziłyby z Auth0 callback
         response = self.client.post(
             self.register_url,
             data=json.dumps(self.user_data),
