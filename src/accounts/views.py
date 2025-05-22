@@ -1,5 +1,6 @@
 import json
 import requests
+from django.shortcuts import get_object_or_404
 
 from rest_framework import status, viewsets, mixins
 from rest_framework.permissions import AllowAny
@@ -82,6 +83,14 @@ class UserDetailView(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
 
+    def get_object(self):
+        lookup_value = self.kwargs.get("pk")
+
+        if lookup_value.isdigit():
+            return get_object_or_404(User, pk=lookup_value)
+        else:
+            return get_object_or_404(User, auth0_id=lookup_value)
+
 
 class UpdateUserView(APIView):
     permission_classes = [AllowAny]
@@ -120,12 +129,10 @@ class UpdateUserView(APIView):
             setattr(user, field, value)
         user.save()
 
-    def patch(self, request, user_id):
+    def patch(self, request, auth0_id):
         auth0_token = self.get_management_token()
         if not auth0_token:
             return Response({"error": "Błąd autoryzacji z Auth0"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        auth0_id = User.objects.get(id=user_id).auth0_id
 
         auth0_url = f"https://{settings.AUTH0_DOMAIN}/api/v2/users/{auth0_id}"
 
