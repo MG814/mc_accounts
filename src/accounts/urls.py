@@ -9,6 +9,6 @@ router.register('users', UserDetailView, basename='users')
 urlpatterns = [
     path("login/", LoginView.as_view(), name="auth0-login"),
     path("logout/", LogoutView.as_view(), name="logout"),
-    path('update-user/<int:user_id>/', UpdateUserView.as_view(), name='update-auth0-user'),
+    path('update-user/<str:auth0_id>/', UpdateUserView.as_view(), name='update-auth0-user'),
 ]
 urlpatterns += router.urls
