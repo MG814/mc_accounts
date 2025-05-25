@@ -27,7 +27,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-80ar!$_03t6-wmq+d34sim1^bh6$2y$kv4m2bx5cj$d#tpyjh$'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -153,10 +153,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-AUTH0_DOMAIN = "dev-s3wwpz0aeo4ffn13.us.auth0.com"
-AUTH0_CLIENT_ID = "8vQCg32VuBvhl83V6RkL8Sfwtbsp8LiI"
-AUTH0_CLIENT_SECRET = "bq5AyY60JJ3OGadYSs5cpFdnrLU6qa4Ljxa_uGm4_AZSMeEGfDhFudRO61FIvQD5"
-AUTH0_CALLBACK_URL = "http://127.0.0.1:8000/api/callback/"
-AUTH0_AUDIENCE = "https://dev-s3wwpz0aeo4ffn13.us.auth0.com/api/v2/"
-LOGOUT_REDIRECT_URL = "http://127.0.0.1:8100/admin/"
+AUTH0_DOMAIN = env('AUTH0_DOMAIN')
+AUTH0_CLIENT_ID = env('AUTH0_CLIENT_ID')
+AUTH0_CLIENT_SECRET = env('AUTH0_CLIENT_SECRET')
+AUTH0_CALLBACK_URL = env('AUTH0_CALLBACK_URL')
+AUTH0_AUDIENCE = env('AUTH0_AUDIENCE')
+LOGOUT_REDIRECT_URL = env('LOGOUT_REDIRECT_URL')
 
