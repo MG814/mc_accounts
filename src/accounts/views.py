@@ -103,7 +103,7 @@ class UpdateUserView(APIView):
             "audience": settings.AUTH0_AUDIENCE,
             "grant_type": "client_credentials",
         }
-        response = requests.post(url, json=payload)
+        response = requests.post(url, json=payload, timeout=10)
         response_data = response.json()
 
         return response_data.get("access_token")
@@ -140,7 +140,7 @@ class UpdateUserView(APIView):
         local_data_base_data, auth0_data = self.add_data_from_request(request.data)
 
         try:
-            auth0_response = requests.patch(auth0_url, json=auth0_data, headers=headers)
+            auth0_response = requests.patch(auth0_url, json=auth0_data, headers=headers, timeout=10)
             auth0_response.raise_for_status()
             self.set_new_value_to_user(local_data_base_data, auth0_id)
 
