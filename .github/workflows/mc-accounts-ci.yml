@@ -53,6 +53,9 @@ jobs:
         DB_USER: ${{ vars.DB_USER }}
         DB_PORT: ${{ vars.DB_PORT }}
         DB_HOST: ${{ vars.DB_HOST }}
+        AUTH0_DOMAIN: ${{ vars.AUTH0_DOMAIN }}
+        AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
+        AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
     - name: Upload coverage report
       uses: codecov/codecov-action@v4
       env:
