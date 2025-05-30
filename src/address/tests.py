@@ -4,8 +4,8 @@ from rest_framework import status
 from django.urls import reverse
 from .models import Address
 from .serializers import AddressSerializer
-from .factory_models import AddressFactory
-from accounts.factory_models import UserFactory
+from .foctories import AddressFactory
+from accounts.factories import UserFactory
 
 
 class UserAddressViewTests(APITestCase):

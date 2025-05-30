@@ -1,7 +1,7 @@
 import factory
 
 from .models import Address
-from accounts.factory_models import UserFactory
+from accounts.factories import UserFactory
 
 
 class AddressFactory(factory.django.DjangoModelFactory):

@@ -2,7 +2,7 @@ from rest_framework.test import APITestCase
 from django.urls import reverse
 from rest_framework import status
 
-from accounts.factory_models import UserFactory
+from accounts.factories import UserFactory
 
 
 class UserDetailViewTests(APITestCase):

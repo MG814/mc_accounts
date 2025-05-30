@@ -9,7 +9,7 @@ from rest_framework.viewsets import GenericViewSet
 from address.models import Address
 from address.serializers import AddressSerializer
 from accounts.models import User
-from address.get_token_fun import get_token
+from address.token_service import get_token
 
 
 class UserAddressView(GenericViewSet, RetrieveModelMixin, UpdateModelMixin, CreateModelMixin):
