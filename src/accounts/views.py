@@ -11,7 +11,9 @@ from urllib.parse import urlencode
 from django.conf import settings
 
 from .serializers import UserSerializer
-from accounts.models import User
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class LoginView(APIView):
