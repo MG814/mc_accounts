@@ -22,7 +22,7 @@ cryptography = "^44.0.0"
 urllib3 = "^2.3.0"
 coverage = "^7.7.0"
 drf-spectacular = "^0.28.0"
-jwt = "^1.4.0"
+pyjwt = "^2.10.1"
 
 
 
