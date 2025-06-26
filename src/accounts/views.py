@@ -1,7 +1,6 @@
 import json
 import requests
 from django.shortcuts import get_object_or_404
-
 from rest_framework import status, viewsets, mixins
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
@@ -11,9 +10,7 @@ from urllib.parse import urlencode
 from django.conf import settings
 
 from .serializers import UserSerializer
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
+from accounts.models import User
 
 
 class LoginView(APIView):
@@ -34,6 +31,7 @@ class LoginView(APIView):
 
 class LogoutView(APIView):
     permission_classes = [AllowAny]
+    serializer_class = UserSerializer
 
     def get(self, request, *args, **kwargs):
         request.session.flush()
@@ -96,6 +94,7 @@ class UserDetailView(viewsets.GenericViewSet, mixins.RetrieveModelMixin):
 
 class UpdateUserView(APIView):
     permission_classes = [AllowAny]
+    serializer_class = UserSerializer
 
     def get_management_token(self):
         url = f"https://{settings.AUTH0_DOMAIN}/oauth/token"
@@ -110,10 +109,10 @@ class UpdateUserView(APIView):
 
         return response_data.get("access_token")
 
-    def add_data_from_request(self, request_data):
+    def add_data_from_request(self, request_data, existing_metadata=None):
         fields = ['username', 'email']
         auth0_data = {}
-        auth0_user_metadata = {}
+        auth0_user_metadata = existing_metadata or {}
         local_data_base_data = {}
 
         for key, value in request_data.items():
@@ -122,7 +121,10 @@ class UpdateUserView(APIView):
             else:
                 auth0_user_metadata[key] = value
             local_data_base_data[key] = value
-        auth0_data["user_metadata"] = auth0_user_metadata
+
+        if auth0_user_metadata:
+            auth0_data["user_metadata"] = auth0_user_metadata
+
         return local_data_base_data, auth0_data
 
     def set_new_value_to_user(self, local_data_base_data, auth0_id):
@@ -131,25 +133,34 @@ class UpdateUserView(APIView):
             setattr(user, field, value)
         user.save()
 
+    def get_user_from_auth0(self, auth0_id, token):
+        url = f"https://{settings.AUTH0_DOMAIN}/api/v2/users/{auth0_id}"
+        headers = {"Authorization": f"Bearer {token}"}
+        response = requests.get(url, headers=headers, timeout=10)
+        return response.json()
+
     def patch(self, request, auth0_id):
         auth0_token = self.get_management_token()
         if not auth0_token:
-            return Response({"error": "Błąd autoryzacji z Auth0"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"error": "Authentication error with Auth0"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         auth0_url = f"https://{settings.AUTH0_DOMAIN}/api/v2/users/{auth0_id}"
 
+        existing_user = self.get_user_from_auth0(auth0_id, auth0_token)
+        existing_metadata = existing_user.get('user_metadata', {})
+
         headers = {"Authorization": f"Bearer {auth0_token}", "Content-Type": "application/json"}
-        local_data_base_data, auth0_data = self.add_data_from_request(request.data)
+        local_data_base_data, auth0_data = self.add_data_from_request(request.data, existing_metadata)
 
         try:
             auth0_response = requests.patch(auth0_url, json=auth0_data, headers=headers, timeout=10)
             auth0_response.raise_for_status()
             self.set_new_value_to_user(local_data_base_data, auth0_id)
 
-            return Response({"message": "Użytkownik zaktualizowany"}, status=status.HTTP_200_OK)
+            return Response({"message": "User updated."}, status=status.HTTP_200_OK)
         except requests.exceptions.HTTPError as http_err:
             return Response({
-                "error": "Błąd aktualizacji użytkownika w Auth0",
+                "error": "User update error.",
                 "details": http_err.response.json() if http_err.response.text else {},
                 "status_code": http_err.response.status_code
             }, status=http_err.response.status_code)
