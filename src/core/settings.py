@@ -16,7 +16,6 @@ ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     'rest_framework',
-    'rest_framework_simplejwt',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -112,4 +111,4 @@ AUTH0_CLIENT_ID = env('AUTH0_CLIENT_ID')
 AUTH0_CLIENT_SECRET = env('AUTH0_CLIENT_SECRET')
 AUTH0_CALLBACK_URL = env('AUTH0_CALLBACK_URL')
 AUTH0_AUDIENCE = env('AUTH0_AUDIENCE')
-LOGOUT_REDIRECT_URL = "login/"
+LOGOUT_REDIRECT_URL = "http://127.0.0.1:8100/admin/"
