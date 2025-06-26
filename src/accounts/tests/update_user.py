@@ -36,7 +36,7 @@ class TestUpdateUser(APITestCase):
         response = self.client.patch(self.update_user_url, update_data, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['message'], 'Użytkownik zaktualizowany')
+        self.assertEqual(response.data['message'], 'User updated.')
 
         self.user.refresh_from_db()
         self.assertEqual(self.user.username, 'newusername')
@@ -77,7 +77,7 @@ class TestUpdateUser(APITestCase):
         response = self.client.patch(self.update_user_url, {}, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
-        self.assertEqual(response.data['error'], 'Błąd autoryzacji z Auth0')
+        self.assertEqual(response.data['error'], 'Authentication error with Auth0')
 
     def test_add_data_from_request_function(self):
         update_data = {
