@@ -12,9 +12,15 @@ services:
       - "5433:5432"
     networks:
       - mc_network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
   web-accounts:
     build: .
-    command: python src/manage.py runserver 0.0.0.0:8100
+    command: /app/start.sh
     volumes:
       - ./src:/app/src
     ports:
@@ -22,7 +28,8 @@ services:
     networks:
       - mc_network
     depends_on:
-      - db-accounts
+      db-accounts:
+        condition: service_healthy
 networks:
   mc_network:
     external: true
